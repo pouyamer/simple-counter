@@ -10,6 +10,8 @@ const increaseBtn = document.querySelector(".increase")
 const decreaseBtn = document.querySelector(".decrease")
 const resetBtn = document.querySelector(".reset")
 
+let currentNumber = config.startingNumber
+
 // functions
 
 const updateCounterNumber = number => {
@@ -24,12 +26,7 @@ const updateTitle = number => {
   document.title = `< ${number} >`
 }
 
-// setting initial state
-numberEl.innerText = config.startingNumber
-
-let currentNumber = config.startingNumber
-
-increaseBtn.addEventListener("click", () => {
+let increaseCounter = () => {
   // update the state
   currentNumber += 1
 
@@ -41,9 +38,9 @@ increaseBtn.addEventListener("click", () => {
 
   // update the app title
   updateTitle(currentNumber)
-})
+}
 
-decreaseBtn.addEventListener("click", () => {
+const decreaseCounter = () => {
   // update the state
   currentNumber = config.allowNegative
     ? currentNumber - 1
@@ -57,9 +54,16 @@ decreaseBtn.addEventListener("click", () => {
 
   // update the app title
   updateTitle(currentNumber)
-})
+}
 
-resetBtn.addEventListener("click", () => {
+// setting initial state
+numberEl.innerText = config.startingNumber
+
+increaseBtn.addEventListener("mousedown", increaseCounter)
+
+decreaseBtn.addEventListener("mousedown", decreaseCounter)
+
+resetBtn.addEventListener("mousedown", () => {
   // update the state
   currentNumber = config.startingNumber
 
@@ -79,5 +83,34 @@ window.addEventListener("load", () => {
     currentNumber = Number(location.hash.slice(1))
     updateCounterNumber(currentNumber)
     updateTitle(currentNumber)
+  }
+})
+
+//  on pressing -, downarrow decrease
+document.addEventListener("keydown", event => {
+  switch (event.key) {
+    case "-":
+    case "ArrowDown":
+    case "ArrowLeft":
+    case "s":
+    case "a":
+      decreaseCounter()
+      break
+
+    case "+":
+    case "ArrowUp":
+    case "ArrowRight":
+    case "w":
+    case "d":
+      increaseCounter()
+      break
+
+    case "r":
+    case " ":
+      resetBtn.click()
+      break
+
+    default:
+      break
   }
 })
