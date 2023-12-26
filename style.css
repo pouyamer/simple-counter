@@ -6,23 +6,28 @@
   box-sizing: border-box;
 }
 
+html {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+
 .number {
   font-size: 250px;
   font-weight: bold;
   text-align: center;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   color: #eee;
   margin-bottom: 1rem;
+
+  grid-area: number;
 }
 
 button {
-  font-family: "Courier New", Courier, monospace;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 35px;
   padding: 1em;
   border-radius: 10px;
   margin: 1em;
   cursor: pointer;
+  text-transform: uppercase;
 }
 
 .increase {
@@ -34,15 +39,29 @@ button {
 }
 
 .decrease {
-  background-color: rgb(240, 135, 135);
+  background-color: #c77070;
 }
 
 .decrease:hover {
-  background-color: rgb(255, 185, 185);
+  background-color: #ffb9b9;
+}
+
+.increase,
+.decrease {
+  border-radius: 1em 8em;
+  width: 100px;
+  height: 100px;
+  place-self: center;
+
+  display: grid;
+  place-content: center;
 }
 
 .reset {
   background-color: rgb(240, 240, 135);
+  grid-area: reset;
+
+  width: fit-content;
 }
 
 .reset:hover {
@@ -51,9 +70,32 @@ button {
 
 body {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  place-content: center;
   height: 100vh;
 
   background-color: #111;
+
+  padding: 2rem;
+}
+
+.counter {
+  display: grid;
+  grid-gap: 1rem;
+
+  justify-items: center;
+
+  grid-template-areas:
+    "increase"
+    "number"
+    "decrease"
+    "reset";
+}
+
+/* Media query */
+@media screen and (max-width: 768px) {
+  .number {
+    font-size: 200px;
+  }
+
+  /* remove the blue outline */
 }
