@@ -18,12 +18,25 @@ const updateCounterNumber = number => {
   numberEl.innerText = number
 }
 
-saveOnUrl = number => {
+const saveOnUrl = number => {
   history.pushState(null, null, `#${number}`)
 }
 
 const updateTitle = number => {
   document.title = `< ${number} >`
+}
+
+const saveToLocalStorage = number => {
+  localStorage.setItem("counter", number)
+}
+
+const getFromLocalStorage = () => {
+  const number = localStorage.getItem("counter")
+  if (number) {
+    return parseInt(number)
+  } else {
+    return config.startingNumber
+  }
 }
 
 let increaseCounter = () => {
@@ -33,8 +46,8 @@ let increaseCounter = () => {
   // update the UI
   updateCounterNumber(currentNumber)
 
-  //saving the state on url
-  saveOnUrl(currentNumber)
+  // save to local storage
+  saveToLocalStorage(currentNumber)
 
   // update the app title
   updateTitle(currentNumber)
@@ -49,8 +62,22 @@ const decreaseCounter = () => {
   // update the UI
   updateCounterNumber(currentNumber)
 
-  //saving the state on url
-  saveOnUrl(currentNumber)
+  // save to local storage
+  saveToLocalStorage(currentNumber)
+
+  // update the app title
+  updateTitle(currentNumber)
+}
+
+const resetCounter = () => {
+  // update the state
+  currentNumber = config.startingNumber
+
+  // update the UI
+  updateCounterNumber(currentNumber)
+
+  // save to local storage
+  saveToLocalStorage(currentNumber)
 
   // update the app title
   updateTitle(currentNumber)
@@ -63,28 +90,7 @@ increaseBtn.addEventListener("mousedown", increaseCounter)
 
 decreaseBtn.addEventListener("mousedown", decreaseCounter)
 
-resetBtn.addEventListener("mousedown", () => {
-  // update the state
-  currentNumber = config.startingNumber
-
-  // update the UI
-  updateCounterNumber(currentNumber)
-
-  // clear the url
-  saveOnUrl("")
-
-  // update the app title
-  updateTitle(currentNumber)
-})
-
-// if user refreshes the page, restore the state
-window.addEventListener("load", () => {
-  if (location.hash) {
-    currentNumber = Number(location.hash.slice(1))
-    updateCounterNumber(currentNumber)
-    updateTitle(currentNumber)
-  }
-})
+resetBtn.addEventListener("mousedown", resetCounter)
 
 //  on pressing -, downarrow decrease
 document.addEventListener("keydown", event => {
@@ -107,10 +113,18 @@ document.addEventListener("keydown", event => {
 
     case "r":
     case " ":
-      resetBtn.click()
+      resetCounter()
       break
 
     default:
       break
   }
+})
+
+window.addEventListener("load", event => {
+  // read from local storage
+  currentNumber = getFromLocalStorage()
+
+  // update the UI
+  updateCounterNumber(currentNumber)
 })
