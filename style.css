@@ -1,9 +1,16 @@
+@font-face {
+  font-family: vazir;
+  src: url(./font/Vazir-Bold-FD.ttf);
+}
+
 *,
 *::after,
 *::before {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  user-select: none;
 }
 
 html {
@@ -11,27 +18,32 @@ html {
 }
 
 .number {
-  font-size: 250px;
+  font-size: 150px;
   font-weight: bold;
   text-align: center;
   color: #eee;
-  margin-bottom: 1rem;
 
   grid-area: number;
 }
 
 button {
   font-weight: bold;
-  font-size: 35px;
   padding: 1em;
   border-radius: 10px;
-  margin: 1em;
   cursor: pointer;
   text-transform: uppercase;
 }
 
+button:is(button, :hover, :focus) {
+  transition: background-color 250ms ease-in-out;
+}
+
 .increase {
   background-color: #87f087;
+  color: #015b01;
+  grid-area: increase;
+
+  border-radius: 8em 1em;
 }
 
 .increase:hover {
@@ -40,6 +52,10 @@ button {
 
 .decrease {
   background-color: #c77070;
+  color: #5b0101;
+  grid-area: decrease;
+
+  border-radius: 1em 8em;
 }
 
 .decrease:hover {
@@ -48,9 +64,10 @@ button {
 
 .increase,
 .decrease {
-  border-radius: 1em 8em;
   width: 100px;
   height: 100px;
+
+  font-size: 50px;
   place-self: center;
 
   display: grid;
@@ -61,16 +78,26 @@ button {
   background-color: rgb(240, 240, 135);
   grid-area: reset;
 
+  font-size: 16px;
+
   width: fit-content;
+
+  justify-self: center;
+
+  opacity: 0.7;
+
+  height: fit-content;
 }
 
 .reset:hover {
   background-color: rgb(255, 255, 185);
+  opacity: 1;
 }
 
 body {
-  display: flex;
+  display: grid;
   place-content: center;
+
   height: 100vh;
 
   background-color: #111;
@@ -80,15 +107,19 @@ body {
 
 .counter {
   display: grid;
-  grid-gap: 1rem;
 
-  justify-items: center;
+  max-width: 720px;
+
+  width: 95%;
+
+  gap: 2rem 1rem;
 
   grid-template-areas:
-    "increase"
-    "number"
-    "decrease"
-    "reset";
+    "increase . ."
+    "number number ."
+    "number number reset"
+    "number number ."
+    "decrease . .";
 }
 
 /* Media query */
