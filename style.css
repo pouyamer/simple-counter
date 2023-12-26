@@ -1,0 +1,59 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.number {
+  font-size: 250px;
+  font-weight: bold;
+  text-align: center;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  color: #eee;
+  margin-bottom: 1rem;
+}
+
+button {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 1em;
+  border-radius: 10px;
+  margin: 1em;
+  cursor: pointer;
+}
+
+.increase {
+  background-color: #87f087;
+}
+
+.increase:hover {
+  background-color: #b9ffb9;
+}
+
+.decrease {
+  background-color: rgb(240, 135, 135);
+}
+
+.decrease:hover {
+  background-color: rgb(255, 185, 185);
+}
+
+.reset {
+  background-color: rgb(240, 240, 135);
+}
+
+.reset:hover {
+  background-color: rgb(255, 255, 185);
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  background-color: #111;
+}
