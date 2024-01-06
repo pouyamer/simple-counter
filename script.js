@@ -1,11 +1,21 @@
 const config = {
-  toggleLimit: false,
-  limit: {
+  isNumberLimitEnabled: true,
+  numberLimit: {
     min: 0,
-    max: 20
+    max: 50
   },
-  startingNumber: 5
+  startingNumber: 50,
+  flashingTitle: {
+    toggle: true,
+    interval: 2000
+  }
 }
+
+// destructuring
+const { toggle: flashingTitleToggle, interval: flashingTitleInterval } =
+  config.flashingTitle
+
+// constants
 
 const DEACTIVE_CLASS_NAME = "deactive"
 const MAX_NUMBER_CLASS_NAME = "max"
@@ -17,8 +27,13 @@ const numberEl = document.querySelector(".number")
 const increaseBtn = document.querySelector(".increase")
 const decreaseBtn = document.querySelector(".decrease")
 const resetBtn = document.querySelector(".reset")
+const submitBtn = document.querySelector(".submit")
+const lastSubjectSpanEl = document.querySelector(".last-subject-span")
+const lastSubjectInputEl = document.querySelector(".last-subject-input")
+const numberSpanEl = document.querySelector(".number-span")
 
 let currentNumber = config.startingNumber
+let isInputBeingEdited = false
 
 // functions
 
@@ -69,13 +84,34 @@ const disableButtonUI = (buttonElement, state) => {
   buttonElement.disabled = state
 }
 
-const saveToLocalStorage = number => {
+const saveNumberToLocalStorage = number => {
   localStorage.setItem("counter", number)
 }
 
-const getFromLocalStorage = () => {
+const getNumberFromLocalStorage = () => {
   const number = localStorage.getItem("counter")
   return number ? parseInt(number) : config.startingNumber
+}
+
+const saveLastSubjectToLocalStorage = subject => {
+  localStorage.setItem("lastSubject", subject)
+}
+
+const getLastSubjectFromLocalStorage = () => {
+  return localStorage.getItem("lastSubject")
+}
+
+const saveLastSubjectNumberToLocalStorage = number => {
+  localStorage.setItem("lastSubjectNumber", number)
+}
+
+const getLastSubjectNumberFromLocalStorage = () => {
+  return localStorage.getItem("lastSubjectNumber")
+}
+
+const setLastSubject = (currentNumber, subject) => {
+  saveLastSubjectToLocalStorage(subject)
+  lastSubjectSpanEl.innerText = subject
 }
 
 const resetAllUI = () => {
@@ -87,8 +123,8 @@ const resetAllUI = () => {
 
 let increaseCounter = () => {
   // update the state
-  currentNumber = config.toggleLimit
-    ? Math.min(config.limit.max, currentNumber + 1)
+  currentNumber = config.isNumberLimitEnabled
+    ? Math.min(config.numberLimit.max, currentNumber + 1)
     : currentNumber + 1
 
   // update the UI
@@ -100,13 +136,13 @@ let increaseCounter = () => {
   }
 
   updateCounterNumber(currentNumber)
-  if (config.toggleLimit && currentNumber >= config.limit.max) {
+  if (config.isNumberLimitEnabled && currentNumber >= config.numberLimit.max) {
     disableButtonUI(increaseBtn, true)
     setNumberColorStateUI("max")
   }
 
   // save to local storage
-  saveToLocalStorage(currentNumber)
+  saveNumberToLocalStorage(currentNumber)
 
   // update the app title
   updateTitle(currentNumber)
@@ -115,8 +151,8 @@ let increaseCounter = () => {
 const decreaseCounter = () => {
   // update the state
 
-  currentNumber = config.toggleLimit
-    ? Math.max(config.limit.min, currentNumber - 1)
+  currentNumber = config.isNumberLimitEnabled
+    ? Math.max(config.numberLimit.min, currentNumber - 1)
     : currentNumber - 1
 
   // update the UI
@@ -127,12 +163,12 @@ const decreaseCounter = () => {
   }
 
   updateCounterNumber(currentNumber)
-  if (config.toggleLimit && currentNumber <= config.limit.min) {
+  if (config.isNumberLimitEnabled && currentNumber <= config.numberLimit.min) {
     disableButtonUI(decreaseBtn, true)
     setNumberColorStateUI("min")
   }
   // save to local storage
-  saveToLocalStorage(currentNumber)
+  saveNumberToLocalStorage(currentNumber)
 
   // update the app title
   updateTitle(currentNumber)
@@ -149,18 +185,18 @@ const resetCounter = () => {
   disableButtonUI(resetBtn, true)
   setNumberColorStateUI("starting")
 
-  if (currentNumber >= config.limit.max) {
+  if (currentNumber >= config.numberLimit.max) {
     disableButtonUI(increaseBtn, true)
     setNumberColorStateUI("max")
   }
 
-  if (currentNumber <= config.limit.min) {
+  if (currentNumber <= config.numberLimit.min) {
     disableButtonUI(decreaseBtn, true)
     setNumberColorStateUI("min")
   }
 
   // save to local storage
-  saveToLocalStorage(currentNumber)
+  saveNumberToLocalStorage(currentNumber)
 
   // update the app title
   updateTitle(currentNumber)
@@ -177,6 +213,7 @@ resetBtn.addEventListener("mousedown", resetCounter)
 
 //  on pressing -, downarrow decrease
 document.addEventListener("keydown", event => {
+  if (isInputBeingEdited) return
   switch (event.key) {
     case "-":
     case "ArrowDown":
@@ -206,7 +243,7 @@ document.addEventListener("keydown", event => {
 
 window.addEventListener("load", event => {
   // read from local storage
-  currentNumber = getFromLocalStorage()
+  currentNumber = getNumberFromLocalStorage()
 
   // update the UI
   updateCounterNumber(currentNumber)
@@ -217,13 +254,70 @@ window.addEventListener("load", event => {
     setNumberColorStateUI("starting")
   }
 
-  if (config.toggleLimit && currentNumber >= config.limit.max) {
+  if (config.isNumberLimitEnabled && currentNumber >= config.numberLimit.max) {
     disableButtonUI(increaseBtn, true)
     numberEl.classList.add(MAX_NUMBER_CLASS_NAME)
   }
 
-  if (config.toggleLimit && currentNumber <= config.limit.min) {
+  if (config.isNumberLimitEnabled && currentNumber <= config.numberLimit.min) {
     disableButtonUI(decreaseBtn, true)
     numberEl.classList.add(MIN_NUMBER_CLASS_NAME)
   }
+
+  // set the last subject in UI
+  const lastSubject = getLastSubjectFromLocalStorage()
+  if (lastSubject) {
+    lastSubjectSpanEl.innerText = lastSubject
+  }
+
+  const lastSubjectNumber = getLastSubjectNumberFromLocalStorage()
+  if (lastSubjectNumber) {
+    numberSpanEl.innerText = lastSubjectNumber
+  }
 })
+
+submitBtn.addEventListener("click", event => {
+  event.preventDefault()
+  const subject = lastSubjectInputEl.value.trim()
+  if (subject === "") {
+    return
+  }
+
+  lastSubjectSpanEl.innerText = subject
+  numberSpanEl.innerText = currentNumber
+
+  lastSubjectInputEl.value = ""
+
+  // save to local storage
+  saveLastSubjectToLocalStorage(subject)
+  saveLastSubjectNumberToLocalStorage(currentNumber)
+})
+
+lastSubjectInputEl.addEventListener("focus", () => {
+  isInputBeingEdited = true
+})
+
+lastSubjectInputEl.addEventListener("blur", () => {
+  isInputBeingEdited = false
+})
+
+// TODO: Add Buttons:
+// - Max
+// - Min
+// - Set (a number modal)
+// - Clear Memory
+
+// TODO: Following key events
+// - End => Go to Max
+// - Home => Go to Min
+// - Delete => Clear Memory
+
+if (flashingTitleToggle) {
+  setInterval(() => {
+    if (document.title === `< ${currentNumber} >`) {
+      document.title = "Counter"
+      return
+    }
+    updateTitle(currentNumber)
+  }, flashingTitleInterval)
+}
