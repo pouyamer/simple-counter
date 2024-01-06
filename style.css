@@ -1,3 +1,20 @@
+:root {
+  --btn-background-saturation: 75%;
+  --btn-background-hover-saturation: 90%;
+
+  --btn-background-lightness: 75%;
+  --btn-background-hover-lightness: 90%;
+
+  --btn-increase-hue: 120;
+  --btn-decrease-hue: 0;
+  --btn-min-hue: 15;
+  --btn-max-hue: 135;
+
+  --btn-reset-hue: 160;
+  --btn-saved-hue: 200;
+  --btn-clear-hue: 240;
+}
+
 @font-face {
   font-family: vazir;
   src: url(./font/Vazir-Bold-FD.ttf);
@@ -50,15 +67,33 @@ h1 {
 }
 
 .number.starting {
-  color: #f0f087;
+  color: hsl(
+    60,
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
 }
 .number.max {
-  color: #87f087;
+  color: hsl(
+    120,
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
 }
 .number.min {
-  color: #c77070;
+  color: hsl(
+    0,
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
 }
-
+.number.saved {
+  color: hsl(
+    200,
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
+}
 button {
   border: none;
   font-weight: bold;
@@ -71,39 +106,80 @@ button:is(button, :hover, :focus) {
 }
 
 .increase {
-  background-color: #87f087;
-  color: #015b01;
+  background-color: hsl(
+    var(--btn-increase-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
+  color: hsl(120, var(--btn-background-saturation), 18%);
   grid-area: increase;
 }
 
 .decrease {
-  background-color: #c77070;
-  color: #5b0101;
+  background-color: hsl(
+    var(--btn-decrease-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
+  color: hsl(0, var(--btn-background-saturation), 18%);
   grid-area: decrease;
 }
 
 .increase:not(button[disabled]):hover {
-  background-color: #b9ffb9;
+  background-color: hsl(
+    var(--btn-increase-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
 }
 .decrease:not(button[disabled]):hover {
-  background-color: #ffb9b9;
+  background-color: hsl(
+    var(--btn-decrease-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
 }
 
 .reset:not(button[disabled]):hover {
-  background-color: #ffffb9;
+  background-color: hsl(
+    var(--btn-reset-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
+  opacity: 1;
+}
+
+button.saved:not(button[disabled]):hover {
+  background-color: hsl(
+    var(--btn-saved-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
   opacity: 1;
 }
 
 .clear:not(button[disabled]):hover {
-  background-color: #f7da90;
+  background-color: hsl(
+    var(--btn-clear-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
   opacity: 1;
 }
 button.max:not(button[disabled]):hover {
-  background-color: #b9ffb9;
+  background-color: hsl(
+    var(--btn-max-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
   opacity: 1;
 }
 button.min:not(button[disabled]):hover {
-  background-color: #ffb9b9;
+  background-color: hsl(
+    var(--btn-min-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
   opacity: 1;
 }
 
@@ -123,30 +199,54 @@ button.deactive {
   cursor: not-allowed;
 }
 
-button:is(.reset, .min, .max, .clear) {
+button:is(.reset, .min, .max, .clear, .saved) {
   font-size: 16px;
-  height: 25px;
-  padding: 0 20px;
-  border-radius: 10px;
+  padding: 0.25em 1em;
+  border-radius: 0.75em;
   opacity: 0.7;
 }
 .reset {
-  background-color: #f0f087;
+  background-color: hsl(
+    60,
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
 
   grid-area: reset;
 }
 button.min {
-  background-color: #c77070;
+  background-color: hsl(
+    var(--btn-min-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
   grid-area: min;
 }
 button.max {
-  background-color: #87f087;
+  background-color: hsl(
+    var(--btn-max-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
   grid-area: max;
 }
 
 .clear {
-  background-color: #c7ae70;
+  background-color: hsl(
+    var(--btn-clear-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
   grid-area: clear;
+}
+
+button.saved {
+  grid-area: saved;
+  background-color: hsl(
+    var(--btn-saved-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
 }
 
 body {
@@ -168,8 +268,9 @@ body {
     ". . number . ."
     ". decrease number increase ."
     ". min . max ."
-    ". reset reset reset ."
-    ".  . clear . .";
+    ". . reset . ."
+    ". . saved . ."
+    ". . clear . .";
 
   gap: 1rem 0.5rem;
 
