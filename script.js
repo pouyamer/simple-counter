@@ -2,9 +2,9 @@ const config = {
   isNumberLimitEnabled: true,
   numberLimit: {
     min: 0,
-    max: 50
+    max: 10
   },
-  startingNumber: 50,
+  startingNumber: 3,
   flashingTitle: {
     toggle: true,
     interval: 2000
@@ -21,12 +21,17 @@ const DEACTIVE_CLASS_NAME = "deactive"
 const MAX_NUMBER_CLASS_NAME = "max"
 const MIN_NUMBER_CLASS_NAME = "min"
 const STARTING_NUMBER_CLASS_NAME = "starting"
+const SAVED_NUMBER_CLASS_NAME = "saved"
 
 // querySelectors
 const numberEl = document.querySelector(".number")
 const increaseBtn = document.querySelector(".increase")
 const decreaseBtn = document.querySelector(".decrease")
 const resetBtn = document.querySelector(".reset")
+const clearMemoryBtn = document.querySelector(".clear")
+const savedBtn = document.querySelector(".saved")
+const minBtn = document.querySelector("button.min")
+const maxBtn = document.querySelector("button.max")
 const submitBtn = document.querySelector(".submit")
 const lastSubjectSpanEl = document.querySelector(".last-subject-span")
 const lastSubjectInputEl = document.querySelector(".last-subject-input")
@@ -56,7 +61,7 @@ const setNumberColorStateUI = state => {
   numberEl.classList.remove(MIN_NUMBER_CLASS_NAME)
   numberEl.classList.remove(STARTING_NUMBER_CLASS_NAME)
   numberEl.classList.remove(MAX_NUMBER_CLASS_NAME)
-
+  numberEl.classList.remove(SAVED_NUMBER_CLASS_NAME)
   switch (state) {
     case "max":
       numberEl.classList.add(MAX_NUMBER_CLASS_NAME)
@@ -69,6 +74,11 @@ const setNumberColorStateUI = state => {
     case "starting":
       numberEl.classList.add(STARTING_NUMBER_CLASS_NAME)
       break
+
+    case "saved":
+      numberEl.classList.add(SAVED_NUMBER_CLASS_NAME)
+      break
+
     case "normal":
       break
 
@@ -118,9 +128,71 @@ const resetAllUI = () => {
   disableButtonUI(decreaseBtn, false)
   disableButtonUI(increaseBtn, false)
   disableButtonUI(resetBtn, false)
-  setNumberColorStateUI("normal")
+  disableButtonUI(clearMemoryBtn, false)
+  disableButtonUI(minBtn, false)
+  disableButtonUI(maxBtn, false)
+  disableButtonUI(savedBtn, false)
 }
 
+const setButtonStatesBasedOnCurrentNumber = () => {
+  // TODO: handle clear later
+  resetAllUI()
+
+  const lastSubjectNumber = parseInt(getLastSubjectNumberFromLocalStorage())
+  const subject = getLastSubjectFromLocalStorage()
+
+  if (subject === null) {
+    disableButtonUI(clearMemoryBtn, true)
+  }
+  if (currentNumber === lastSubjectNumber || isNaN(lastSubjectNumber)) {
+    disableButtonUI(savedBtn, true)
+  }
+
+  if (currentNumber === config.startingNumber) {
+    disableButtonUI(resetBtn, true)
+  }
+
+  if (config.isNumberLimitEnabled) {
+    if (currentNumber === config.numberLimit.min) {
+      disableButtonUI(decreaseBtn, true)
+      disableButtonUI(minBtn, true)
+    }
+
+    if (currentNumber === config.numberLimit.max) {
+      disableButtonUI(increaseBtn, true)
+      disableButtonUI(maxBtn, true)
+    }
+  } else {
+    disableButtonUI(minBtn, true)
+    disableButtonUI(maxBtn, true)
+  }
+}
+
+const setNumberColorStateBasedOnCurrentNumber = () => {
+  setNumberColorStateUI("normal")
+
+  if (currentNumber === parseInt(getLastSubjectNumberFromLocalStorage())) {
+    setNumberColorStateUI("saved")
+  }
+
+  if (currentNumber === config.startingNumber) {
+    setNumberColorStateUI("starting")
+  }
+
+  if (config.isNumberLimitEnabled) {
+    if (currentNumber === config.numberLimit.min) {
+      setNumberColorStateUI("min")
+      return
+    }
+
+    if (currentNumber === config.numberLimit.max) {
+      setNumberColorStateUI("max")
+      return
+    } else return
+  }
+}
+
+// event listener functions:
 let increaseCounter = () => {
   // update the state
   currentNumber = config.isNumberLimitEnabled
@@ -136,10 +208,9 @@ let increaseCounter = () => {
   }
 
   updateCounterNumber(currentNumber)
-  if (config.isNumberLimitEnabled && currentNumber >= config.numberLimit.max) {
-    disableButtonUI(increaseBtn, true)
-    setNumberColorStateUI("max")
-  }
+
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
 
   // save to local storage
   saveNumberToLocalStorage(currentNumber)
@@ -157,16 +228,10 @@ const decreaseCounter = () => {
 
   // update the UI
   resetAllUI()
-  if (currentNumber === config.startingNumber) {
-    disableButtonUI(resetBtn, true)
-    setNumberColorStateUI("starting")
-  }
 
   updateCounterNumber(currentNumber)
-  if (config.isNumberLimitEnabled && currentNumber <= config.numberLimit.min) {
-    disableButtonUI(decreaseBtn, true)
-    setNumberColorStateUI("min")
-  }
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
   // save to local storage
   saveNumberToLocalStorage(currentNumber)
 
@@ -180,26 +245,68 @@ const resetCounter = () => {
 
   // update the UI
   updateCounterNumber(currentNumber)
-  resetAllUI()
 
-  disableButtonUI(resetBtn, true)
-  setNumberColorStateUI("starting")
-
-  if (currentNumber >= config.numberLimit.max) {
-    disableButtonUI(increaseBtn, true)
-    setNumberColorStateUI("max")
-  }
-
-  if (currentNumber <= config.numberLimit.min) {
-    disableButtonUI(decreaseBtn, true)
-    setNumberColorStateUI("min")
-  }
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
 
   // save to local storage
   saveNumberToLocalStorage(currentNumber)
 
   // update the app title
   updateTitle(currentNumber)
+}
+
+const setCounterToMax = () => {
+  // setting the state
+  currentNumber = config.numberLimit.max
+
+  // update the UI
+  updateCounterNumber(currentNumber)
+
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
+
+  // save to local storage
+  saveNumberToLocalStorage(currentNumber)
+}
+
+const setCounterToMin = () => {
+  // setting the state
+  currentNumber = config.numberLimit.min
+
+  // update the UI
+  updateCounterNumber(currentNumber)
+
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
+
+  // save to local storage
+  saveNumberToLocalStorage(currentNumber)
+}
+
+const setCounterToLastSubjectNumber = () => {
+  currentNumber = parseInt(getLastSubjectNumberFromLocalStorage())
+
+  updateCounterNumber(currentNumber)
+
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
+
+  saveNumberToLocalStorage(currentNumber)
+}
+
+const clearMemory = () => {
+  localStorage.clear()
+
+  lastSubjectSpanEl.innerText = ""
+  numberSpanEl.innerText = ""
+
+  updateCounterNumber(currentNumber)
+
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
+
+  saveNumberToLocalStorage(currentNumber)
 }
 
 // setting initial state
@@ -211,6 +318,13 @@ decreaseBtn.addEventListener("mousedown", decreaseCounter)
 
 resetBtn.addEventListener("mousedown", resetCounter)
 
+maxBtn.addEventListener("mousedown", setCounterToMax)
+
+minBtn.addEventListener("mousedown", setCounterToMin)
+
+savedBtn.addEventListener("mousedown", setCounterToLastSubjectNumber)
+
+clearMemoryBtn.addEventListener("mousedown", clearMemory)
 //  on pressing -, downarrow decrease
 document.addEventListener("keydown", event => {
   if (isInputBeingEdited) return
@@ -247,22 +361,8 @@ window.addEventListener("load", event => {
 
   // update the UI
   updateCounterNumber(currentNumber)
-  resetAllUI()
-
-  if (currentNumber === config.startingNumber) {
-    disableButtonUI(resetBtn, true)
-    setNumberColorStateUI("starting")
-  }
-
-  if (config.isNumberLimitEnabled && currentNumber >= config.numberLimit.max) {
-    disableButtonUI(increaseBtn, true)
-    numberEl.classList.add(MAX_NUMBER_CLASS_NAME)
-  }
-
-  if (config.isNumberLimitEnabled && currentNumber <= config.numberLimit.min) {
-    disableButtonUI(decreaseBtn, true)
-    numberEl.classList.add(MIN_NUMBER_CLASS_NAME)
-  }
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
 
   // set the last subject in UI
   const lastSubject = getLastSubjectFromLocalStorage()
@@ -291,6 +391,8 @@ submitBtn.addEventListener("click", event => {
   // save to local storage
   saveLastSubjectToLocalStorage(subject)
   saveLastSubjectNumberToLocalStorage(currentNumber)
+
+  setButtonStatesBasedOnCurrentNumber()
 })
 
 lastSubjectInputEl.addEventListener("focus", () => {
