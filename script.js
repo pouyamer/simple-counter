@@ -334,6 +334,7 @@ document.addEventListener("keydown", event => {
     case "ArrowLeft":
     case "s":
     case "a":
+    case "PageDown":
       decreaseCounter()
       break
 
@@ -342,6 +343,7 @@ document.addEventListener("keydown", event => {
     case "ArrowRight":
     case "w":
     case "d":
+    case "PageUp":
       increaseCounter()
       break
 
@@ -350,7 +352,26 @@ document.addEventListener("keydown", event => {
       resetCounter()
       break
 
+    case "m":
+    case "End":
+      setCounterToMax()
+      break
+
+    case "n":
+    case "Home":
+      setCounterToMin()
+      break
+
+    case "l":
+      setCounterToLastSubjectNumber()
+      break
+
+    case "Delete":
+      clearMemory()
+      break
+
     default:
+      console.log(event.key)
       break
   }
 })
