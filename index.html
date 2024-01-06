@@ -12,12 +12,23 @@
 
 <body>
     <h1>Simple Counter</h1>
+    <h2 class="last-subject">Last Subject: (<span class="number-span"></span>) - <span class="last-subject-span"></span>
+    </h2>
     <div class="counter">
         <p class="number">0</p>
         <button class="increase">+</button>
         <button class="decrease">-</button>
         <button class="reset">Reset</button>
+        <button class="max">Max</button>
+        <button class="min">Min</button>
+        <button class="clear">Clear</button>
     </div>
+
+    <form class="form">
+        <label for="last">Enter Last Subject</label>
+        <input class="last-subject-input" type="text" id="last">
+        <button type="submit" class="submit">Submit</button>
+    </form>
 </body>
 
 </html>

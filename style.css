@@ -14,15 +14,30 @@
 }
 
 html {
-  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 h1 {
-  font-family: vazir;
-  font-size: 2rem;
   text-align: center;
-  margin-bottom: 1em;
+  margin-bottom: 2rem;
   color: #eee;
+}
+
+.last-subject {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+
+  color: #222;
+}
+
+.last-subject-span,
+.number-span {
+  color: hsl(150, 39%, 61%);
+}
+
+.form * {
+  font: inherit;
 }
 
 .number {
@@ -79,6 +94,19 @@ button:is(button, :hover, :focus) {
   opacity: 1;
 }
 
+.clear:not(button[disabled]):hover {
+  background-color: #f7da90;
+  opacity: 1;
+}
+button.max:not(button[disabled]):hover {
+  background-color: #b9ffb9;
+  opacity: 1;
+}
+button.min:not(button[disabled]):hover {
+  background-color: #ffb9b9;
+  opacity: 1;
+}
+
 .increase,
 .decrease {
   font-size: 50px;
@@ -95,19 +123,30 @@ button.deactive {
   cursor: not-allowed;
 }
 
+button:is(.reset, .min, .max, .clear) {
+  font-size: 16px;
+  height: 25px;
+  padding: 0 20px;
+  border-radius: 10px;
+  opacity: 0.7;
+}
 .reset {
   background-color: #f0f087;
+
   grid-area: reset;
+}
+button.min {
+  background-color: #c77070;
+  grid-area: min;
+}
+button.max {
+  background-color: #87f087;
+  grid-area: max;
+}
 
-  font-size: 16px;
-
-  height: 50px;
-
-  padding: 0 20px;
-
-  border-radius: 10px;
-
-  opacity: 0.7;
+.clear {
+  background-color: #c7ae70;
+  grid-area: clear;
 }
 
 body {
@@ -123,14 +162,16 @@ body {
   display: grid;
 
   grid-template-columns: 1fr 100px 300px 100px 1fr;
-  grid-template-rows: 1fr 100px 1fr 1fr;
+  grid-template-rows: 1fr 1fr 100px 1fr 1fr;
   grid-template-areas:
+    ". . . . ."
     ". . number . ."
     ". decrease number increase ."
-    ". . number . ."
-    ". reset reset reset .";
+    ". min . max ."
+    ". reset reset reset ."
+    ".  . clear . .";
 
-  gap: 0.5rem 1rem;
+  gap: 1rem 0.5rem;
 
   background-color: hsl(150, 20%, 20%);
   border-radius: 10px;
@@ -143,6 +184,44 @@ body {
   aspect-ratio: 1.618/1;
 }
 
+/* ===== styling Form ===== */
+
+label {
+  place-self: center;
+  padding-right: 1rem;
+}
+
+.form {
+  padding-top: 3rem;
+  font-size: 1.5rem;
+  display: grid;
+  grid-template-columns: auto 3fr auto;
+  grid-template-areas: "label last submit";
+
+  align-content: center;
+}
+
+.submit {
+  grid-area: submit;
+  background-color: #87c8f0;
+  padding: 0 1rem;
+  border-radius: 0 10px 10px 0;
+  text-transform: none;
+}
+
+.submit:hover {
+  background-color: #b9e0ff;
+}
+
+.last-subject-input {
+  grid-area: last;
+  padding: 1rem;
+  font-size: 1.5rem;
+}
+
+.last-subject-input:focus {
+  background-color: #cae0ed;
+}
 /* Media query */
 @media screen and (max-width: 768px) {
   /* remove the blue outline */
