@@ -2,9 +2,9 @@ const config = {
   isNumberLimitEnabled: true,
   numberLimit: {
     min: 0,
-    max: 10
+    max: 50
   },
-  startingNumber: 3,
+  startingNumber: 0,
   flashingTitle: {
     toggle: true,
     interval: 2000
@@ -41,6 +41,15 @@ let currentNumber = config.startingNumber
 let isInputBeingEdited = false
 
 // functions
+
+const log = (message, debugMode = false, showDate = true) => {
+  const dateAndTime = new Date().toLocaleString()
+  console.log(
+    `${debugMode ? "DEBUG: " : ""}${
+      showDate ? `[${dateAndTime}] ` : ""
+    }${message}`
+  )
+}
 
 const updateCounterNumber = number => {
   numberEl.innerText = number
@@ -307,6 +316,8 @@ const clearMemory = () => {
   setNumberColorStateBasedOnCurrentNumber()
 
   saveNumberToLocalStorage(currentNumber)
+
+  log("Memory cleared")
 }
 
 // setting initial state
@@ -371,7 +382,7 @@ document.addEventListener("keydown", event => {
       break
 
     default:
-      console.log(event.key)
+      log(`Key pressed: ${event.key}`, (debugMode = true))
       break
   }
 })
@@ -407,6 +418,8 @@ submitBtn.addEventListener("click", event => {
   lastSubjectSpanEl.innerText = subject
   numberSpanEl.innerText = currentNumber
 
+  log(`New saved subject: ${currentNumber} | Subject: "${subject}"`)
+
   lastSubjectInputEl.value = ""
 
   // save to local storage
@@ -414,6 +427,7 @@ submitBtn.addEventListener("click", event => {
   saveLastSubjectNumberToLocalStorage(currentNumber)
 
   setButtonStatesBasedOnCurrentNumber()
+  setCounterToLastSubjectNumber()
 })
 
 lastSubjectInputEl.addEventListener("focus", () => {
@@ -423,19 +437,20 @@ lastSubjectInputEl.addEventListener("focus", () => {
 lastSubjectInputEl.addEventListener("blur", () => {
   isInputBeingEdited = false
 })
-
 // TODO: Add Buttons:
-// - Max
-// - Min
 // - Set (a number modal)
-// - Clear Memory
+
+// - Max [x]
+// - Min [x]
+// - Clear Memory [x]
 
 // TODO: Following key events
-// - End => Go to Max
-// - Home => Go to Min
-// - Delete => Clear Memory
 
-if (flashingTitleToggle) {
+// - End => Go to Max [x]
+// - Home => Go to Min [x]
+// - Delete => Clear Memory [x]
+
+flashingTitleToggle &&
   setInterval(() => {
     if (document.title === `< ${currentNumber} >`) {
       document.title = "Counter"
@@ -443,4 +458,3 @@ if (flashingTitleToggle) {
     }
     updateTitle(currentNumber)
   }, flashingTitleInterval)
-}
