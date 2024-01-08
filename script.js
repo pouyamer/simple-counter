@@ -2,9 +2,9 @@ const config = {
   isNumberLimitEnabled: true,
   numberLimit: {
     min: 0,
-    max: 50
+    max: 100
   },
-  startingNumber: 0,
+  startingNumber: 50,
   flashingTitle: {
     toggle: true,
     interval: 2000
@@ -32,6 +32,7 @@ const clearMemoryBtn = document.querySelector(".clear")
 const savedBtn = document.querySelector(".saved")
 const minBtn = document.querySelector("button.min")
 const maxBtn = document.querySelector("button.max")
+const setBtn = document.querySelector(".set")
 const submitBtn = document.querySelector(".submit")
 const lastSubjectSpanEl = document.querySelector(".last-subject-span")
 const lastSubjectInputEl = document.querySelector(".last-subject-input")
@@ -265,6 +266,44 @@ const resetCounter = () => {
   updateTitle(currentNumber)
 }
 
+const setCounterToCustomNumber = () => {
+  let numberStringPrompt = window.prompt("Enter the number:")
+  console.log(numberStringPrompt)
+  const number = parseInt(numberStringPrompt)
+
+  if (numberStringPrompt === null || numberStringPrompt === "") return
+
+  if (isNaN(number)) {
+    alert("You must type a number in input")
+    return
+  }
+
+  if (config.isNumberLimitEnabled) {
+    if (number > config.numberLimit.max) {
+      alert("your number is too high")
+      return
+    }
+
+    if (number < config.numberLimit.min) {
+      alert("your number is too low")
+      return
+    }
+  }
+
+  currentNumber = number
+
+  updateCounterNumber(number)
+
+  setButtonStatesBasedOnCurrentNumber()
+  setNumberColorStateBasedOnCurrentNumber()
+
+  // save to local storage
+  saveNumberToLocalStorage(currentNumber)
+
+  // update the app title
+  updateTitle(currentNumber)
+}
+
 const setCounterToMax = () => {
   // setting the state
   currentNumber = config.numberLimit.max
@@ -329,6 +368,8 @@ decreaseBtn.addEventListener("mousedown", decreaseCounter)
 
 resetBtn.addEventListener("mousedown", resetCounter)
 
+setBtn.addEventListener("mousedown", setCounterToCustomNumber)
+
 maxBtn.addEventListener("mousedown", setCounterToMax)
 
 minBtn.addEventListener("mousedown", setCounterToMin)
@@ -361,6 +402,10 @@ document.addEventListener("keydown", event => {
     case "r":
     case " ":
       resetCounter()
+      break
+
+    case "f":
+      setCounterToCustomNumber()
       break
 
     case "m":
@@ -438,11 +483,11 @@ lastSubjectInputEl.addEventListener("blur", () => {
   isInputBeingEdited = false
 })
 // TODO: Add Buttons:
-// - Set (a number modal)
 
 // - Max [x]
 // - Min [x]
 // - Clear Memory [x]
+// - Set (a number modal) [x]
 
 // TODO: Following key events
 

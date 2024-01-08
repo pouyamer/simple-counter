@@ -10,10 +10,12 @@
     <script src="./script.js" defer></script>
 </head>
 
-<body>
-    <h1>Simple Counter</h1>
-    <h2 class="last-subject">Last Subject: (<span class="number-span"></span>) - <span class="last-subject-span"></span>
-    </h2>
+<body data-theme="1">
+    <div class="title-container">
+        <h1 class="title">Simple Counter</h1>
+        <p class="title-description"> A simple counter made by pouyamer</p>
+    </div>
+
     <div class="counter">
         <p class="number">0</p>
         <button class="increase">+</button>
@@ -25,12 +27,16 @@
         <button class="saved button-action">Saved</button>
         <button class="set button-action">Set</button>
     </div>
+    <br>
 
     <form class="form">
         <label for="last">Enter Last Subject</label>
         <input class="last-subject-input" type="text" id="last">
         <button type="submit" class="submit">Submit</button>
     </form>
+
+    <p class="last-subject">Last Subject: (<span class="number-span"></span>) - <span class="last-subject-span"></span>
+    </p>
 </body>
 
 </html>

@@ -1,20 +1,50 @@
-:root {
+/*==== Themes ====*/
+
+body[data-theme="1"] {
+  --app-main-hue: 160;
+
+  --btn-background-saturation: 85%;
+  --btn-background-hover-saturation: 90%;
+
+  --btn-background-lightness: 80%;
+  --btn-background-hover-lightness: 90%;
+
+  --button-background-hue: 0;
+
+  --btn-increase-hue: 120;
+  --btn-decrease-hue: 0;
+  --btn-min-hue: 15;
+  --btn-max-hue: 140;
+  --btn-reset-hue: 60;
+  --btn-saved-hue: 280;
+  --btn-clear-hue: 330;
+  --btn-set-hue: 40;
+}
+
+body[data-theme="2"] {
+  --app-main-hue: 180;
+
   --btn-background-saturation: 75%;
   --btn-background-hover-saturation: 90%;
 
   --btn-background-lightness: 75%;
   --btn-background-hover-lightness: 90%;
 
-  --btn-increase-hue: 120;
-  --btn-decrease-hue: 0;
-  --btn-min-hue: 15;
-  --btn-max-hue: 135;
+  --button-background-hue: var(--app-main-hue);
 
-  --btn-reset-hue: 160;
-  --btn-saved-hue: 200;
-  --btn-clear-hue: 240;
-  --btn-set-hue: 300;
+  --btn-increase-hue: var(--app-main-hue);
+  --btn-decrease-hue: var(--app-main-hue);
+  --btn-min-hue: var(--app-main-hue);
+  --btn-max-hue: var(--app-main-hue);
+  --btn-reset-hue: var(--app-main-hue);
+  --btn-saved-hue: var(--app-main-hue);
+  --btn-clear-hue: var(--app-main-hue);
+  --btn-set-hue: var(--app-main-hue);
 }
+
+/*==== Typography ====*/
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 @font-face {
   font-family: vazir;
@@ -32,26 +62,40 @@
 }
 
 html {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
-h1 {
+.title-container {
+  margin-bottom: 4rem;
+}
+
+.title {
+  font-size: 4.5rem;
+  color: hsl(var(--app-main-hue), 80%, 90%);
+}
+
+.title-description {
+  margin-top: 0.75em;
+  font-size: 1.2rem;
   text-align: center;
-  margin-bottom: 2rem;
-  color: #eee;
+  color: hsl(var(--app-main-hue), 80%, 90%, 0.5);
 }
 
 .last-subject {
-  font-size: 1.5rem;
-  text-align: center;
-  margin-bottom: 1rem;
+  width: 50%;
+  min-width: 750px;
+  padding-top: 1rem;
+  font-size: 2rem;
+  margin-top: 2em;
 
-  color: #222;
+  font-family: sans-serif;
+  color: hsl(var(--app-main-hue), 80%, 90%);
 }
 
 .last-subject-span,
 .number-span {
-  color: hsl(150, 39%, 61%);
+  font-weight: 600;
+  color: hsl(var(--app-main-hue), 39%, 61%);
 }
 
 .form * {
@@ -97,100 +141,44 @@ h1 {
 }
 button {
   border: none;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   text-transform: uppercase;
+
+  background-color: hsl(
+    var(--btn-background-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
+  opacity: 0.7;
 }
 
-button:is(button, :hover, :focus) {
+button:is(:hover, :focus) {
+  background-color: hsl(
+    var(--btn-background-hue),
+    var(--btn-background-hover-saturation),
+    var(--btn-background-hover-lightness)
+  );
+  outline: none;
+  outline: 1px solid black;
+
+  opacity: 1;
+}
+
+button:is(button, :hover) {
   transition: background-color 200ms ease-out;
 }
 
 .increase {
-  background-color: hsl(
-    var(--btn-increase-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
-  color: hsl(120, var(--btn-background-saturation), 18%);
+  --btn-background-hue: var(--btn-increase-hue);
+  color: hsl(var(--btn-increase-hue), var(--btn-background-saturation), 18%);
   grid-area: increase;
 }
 
 .decrease {
-  background-color: hsl(
-    var(--btn-decrease-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
-  color: hsl(0, var(--btn-background-saturation), 18%);
+  --btn-background-hue: var(--btn-decrease-hue);
+  color: hsl(var(--btn-decrease-hue), var(--btn-background-saturation), 18%);
   grid-area: decrease;
-}
-
-.increase:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-increase-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-}
-.decrease:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-decrease-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-}
-
-.reset:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-reset-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-  opacity: 1;
-}
-
-button.saved:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-saved-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-  opacity: 1;
-}
-
-.clear:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-clear-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-  opacity: 1;
-}
-button.max:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-max-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-  opacity: 1;
-}
-button.min:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-min-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-  opacity: 1;
-}
-
-button.set:not(button[disabled]):hover {
-  background-color: hsl(
-    var(--btn-set-hue),
-    var(--btn-background-hover-saturation),
-    var(--btn-background-hover-lightness)
-  );
-  opacity: 1;
 }
 
 .increase,
@@ -199,8 +187,8 @@ button.set:not(button[disabled]):hover {
 
   border-radius: 50%;
 
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
   place-self: center;
 }
 
@@ -209,112 +197,91 @@ button.deactive {
   cursor: not-allowed;
 }
 
+button.deactive:is(:hover, :active) {
+  background-color: hsl(
+    var(--btn-background-hue),
+    var(--btn-background-saturation),
+    var(--btn-background-lightness)
+  );
+}
+
 .button-action {
   font-size: 16px;
   padding: 0.25em 1em;
   border-radius: 0.75em;
-  opacity: 0.7;
 }
-.reset {
-  background-color: hsl(
-    60,
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
 
+.reset {
+  --btn-background-hue: var(--btn-reset-hue);
   grid-area: reset;
 }
 button.min {
-  background-color: hsl(
-    var(--btn-min-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
+  --btn-background-hue: var(--btn-min-hue);
   grid-area: min;
 }
 button.max {
-  background-color: hsl(
-    var(--btn-max-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
+  --btn-background-hue: var(--btn-max-hue);
   grid-area: max;
 }
 
 .clear {
-  background-color: hsl(
-    var(--btn-clear-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
+  --btn-background-hue: var(--btn-clear-hue);
   grid-area: clear;
 }
 
 button.saved {
+  --btn-background-hue: var(--btn-saved-hue);
   grid-area: saved;
-  background-color: hsl(
-    var(--btn-saved-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
 }
 
 button.set {
+  --btn-background-hue: var(--btn-set-hue);
   grid-area: set;
-  background-color: hsl(
-    var(--btn-set-hue),
-    var(--btn-background-saturation),
-    var(--btn-background-lightness)
-  );
 }
 
 body {
   display: grid;
-  place-content: center;
-
-  height: 100vh;
-
-  background-color: hsl(150, 20%, 35%);
+  justify-items: center;
+  padding: 2em;
+  background-color: hsl(var(--app-main-hue), 50%, 25%);
 }
 
 .counter {
+  width: 50%;
+  min-width: 750px;
   display: grid;
 
-  grid-template-columns: 1fr 100px 300px 100px 1fr;
-  grid-template-rows: 1fr 1fr 100px 1fr 1fr;
+  grid-template-columns: auto 3fr auto;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
-    ". . . . ."
-    ". . number . ."
-    ". decrease number increase ."
-    ". . number . ."
-    ". min number max ."
-    ". set . reset ."
-    ". . saved . ."
-    ". . clear . .";
-
-  gap: 0.5rem 0;
-
-  background-color: hsl(150, 20%, 20%);
-  border-radius: 10px;
+    " decrease number increase "
+    " min . max "
+    " set . reset "
+    " . clear . "
+    " . saved . ";
 
   padding: 5em;
+  margin-bottom: 2em;
+  gap: 0.5rem 0;
+
+  background-color: hsl(var(--app-main-hue), 80%, 10%);
+  border-radius: 16px;
   place-items: center;
   box-shadow: hsl(100, 20%, 10%, 0.25) 0px 30px 60px -12px inset,
     rgb(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
-
-  aspect-ratio: 1.618/1;
 }
 
 /* ===== styling Form ===== */
 
 label {
-  place-self: center;
+  align-self: center;
   padding-right: 1rem;
 }
 
 .form {
-  padding-top: 3rem;
-  font-size: 1.5rem;
+  width: 50%;
+  min-width: 750px;
+  font-size: 1.25rem;
   display: grid;
   grid-template-columns: auto 3fr auto;
   grid-template-areas: "label last submit";
@@ -324,24 +291,19 @@ label {
 
 .submit {
   grid-area: submit;
-  background-color: #87c8f0;
+  --btn-background-hue: 20;
   padding: 0 1rem;
   border-radius: 0 10px 10px 0;
   text-transform: none;
 }
 
-.submit:hover {
-  background-color: #b9e0ff;
-}
-
 .last-subject-input {
   grid-area: last;
-  padding: 1rem;
-  font-size: 1.5rem;
+  padding: 0.5rem;
 }
 
 .last-subject-input:focus {
-  background-color: #cae0ed;
+  background-color: hsl(var(--app-main-hue), 30%, 86%);
 }
 /* Media query */
 @media screen and (max-width: 768px) {
