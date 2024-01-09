@@ -1,10 +1,10 @@
 const config = {
-  isNumberLimitEnabled: true,
+  startingNumber: 50,
   numberLimit: {
+    toggle: true,
     min: 0,
     max: 100
   },
-  startingNumber: 50,
   flashingTitle: {
     toggle: true,
     interval: 2000
@@ -12,6 +12,8 @@ const config = {
 }
 
 // destructuring
+
+const { toggle: numberLimitToggle } = config.numberLimit
 const { toggle: flashingTitleToggle, interval: flashingTitleInterval } =
   config.flashingTitle
 
@@ -72,6 +74,8 @@ const setNumberColorStateUI = state => {
   numberEl.classList.remove(STARTING_NUMBER_CLASS_NAME)
   numberEl.classList.remove(MAX_NUMBER_CLASS_NAME)
   numberEl.classList.remove(SAVED_NUMBER_CLASS_NAME)
+
+  // setting new state
   switch (state) {
     case "max":
       numberEl.classList.add(MAX_NUMBER_CLASS_NAME)
@@ -129,11 +133,6 @@ const getLastSubjectNumberFromLocalStorage = () => {
   return localStorage.getItem("lastSubjectNumber")
 }
 
-const setLastSubject = (currentNumber, subject) => {
-  saveLastSubjectToLocalStorage(subject)
-  lastSubjectSpanEl.innerText = subject
-}
-
 const resetAllUI = () => {
   disableButtonUI(decreaseBtn, false)
   disableButtonUI(increaseBtn, false)
@@ -162,7 +161,7 @@ const setButtonStatesBasedOnCurrentNumber = () => {
     disableButtonUI(resetBtn, true)
   }
 
-  if (config.isNumberLimitEnabled) {
+  if (numberLimitToggle) {
     if (currentNumber === config.numberLimit.min) {
       disableButtonUI(decreaseBtn, true)
       disableButtonUI(minBtn, true)
@@ -189,7 +188,7 @@ const setNumberColorStateBasedOnCurrentNumber = () => {
     setNumberColorStateUI("starting")
   }
 
-  if (config.isNumberLimitEnabled) {
+  if (numberLimitToggle) {
     if (currentNumber === config.numberLimit.min) {
       setNumberColorStateUI("min")
       return
@@ -205,7 +204,7 @@ const setNumberColorStateBasedOnCurrentNumber = () => {
 // event listener functions:
 let increaseCounter = () => {
   // update the state
-  currentNumber = config.isNumberLimitEnabled
+  currentNumber = numberLimitToggle
     ? Math.min(config.numberLimit.max, currentNumber + 1)
     : currentNumber + 1
 
@@ -232,7 +231,7 @@ let increaseCounter = () => {
 const decreaseCounter = () => {
   // update the state
 
-  currentNumber = config.isNumberLimitEnabled
+  currentNumber = numberLimitToggle
     ? Math.max(config.numberLimit.min, currentNumber - 1)
     : currentNumber - 1
 
@@ -278,7 +277,7 @@ const setCounterToCustomNumber = () => {
     return
   }
 
-  if (config.isNumberLimitEnabled) {
+  if (numberLimitToggle) {
     if (number > config.numberLimit.max) {
       alert("your number is too high")
       return
