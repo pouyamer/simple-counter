@@ -402,6 +402,8 @@ label {
   }
 
   .form {
+    min-width: unset;
+
     margin-top: 1em;
     width: 100vw;
     max-width: 500px;
