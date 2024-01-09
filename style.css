@@ -283,12 +283,12 @@ label {
 }
 
 .form {
-  min-width: 50%;
-  max-width: 300px;
+  width: 50%;
+  min-width: 750px;
   font-size: 1.25rem;
   display: grid;
   grid-template-columns: auto 3fr auto;
-  grid-template-areas: "label last submit";
+  grid-template-areas: "label input submit";
 
   align-content: center;
 }
