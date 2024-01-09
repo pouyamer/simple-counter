@@ -134,7 +134,7 @@ html {
 }
 .number.saved {
   color: hsl(
-    200,
+    var(--btn-saved-hue),
     var(--btn-background-saturation),
     var(--btn-background-lightness)
   );
