@@ -1,9 +1,9 @@
 const config = {
-  startingNumber: 50,
+  startingNumber: 1,
   numberLimit: {
     toggle: true,
     min: 0,
-    max: 100
+    max: 50
   },
   flashingTitle: {
     toggle: true,
