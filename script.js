@@ -8,6 +8,9 @@ const config = {
   flashingTitle: {
     toggle: true,
     interval: 2000
+  },
+  timer: {
+    timeout_Seconds: 7200
   }
 }
 
@@ -24,24 +27,40 @@ const MAX_NUMBER_CLASS_NAME = "max"
 const MIN_NUMBER_CLASS_NAME = "min"
 const STARTING_NUMBER_CLASS_NAME = "starting"
 const SAVED_NUMBER_CLASS_NAME = "saved"
+const INVISIBLE_LAST_SUBJECT_CLASS_NAME = "invisible"
+const PAUSE_PAUSE_RESUME_BUTTON_CLASS_NAME = "pause"
+const RESUME_PAUSE_RESUME_BUTTON_CLASS_NAME = "resume"
+const FLASHING_TIMER_CLASS_NAME = "flashing"
 
 // querySelectors
+
+const lastSubjectDialog = document.querySelector(".last-subject-dialog")
 const numberEl = document.querySelector(".number")
 const increaseBtn = document.querySelector(".increase")
 const decreaseBtn = document.querySelector(".decrease")
 const resetBtn = document.querySelector(".reset")
 const clearMemoryBtn = document.querySelector(".clear")
 const savedBtn = document.querySelector(".saved")
+const saveBtn = document.querySelector(".save")
+const pauseResumeBtn = document.querySelector(".pause-resume")
 const minBtn = document.querySelector("button.min")
 const maxBtn = document.querySelector("button.max")
 const setBtn = document.querySelector(".set")
 const submitBtn = document.querySelector(".submit")
-const lastSubjectSpanEl = document.querySelector(".last-subject-span")
+const lastSubjectEl = document.querySelector(".last-subject")
+const lastSubjectSpanEl = lastSubjectEl.querySelector(".last-subject-span")
 const lastSubjectInputEl = document.querySelector(".last-subject-input")
 const numberSpanEl = document.querySelector(".number-span")
 
+const timerEl = document.querySelector(".timer")
+const timerTimeSpanEl = timerEl.querySelector("span.time")
+const innerTimeProgressEl = timerEl.querySelector(".inner-timer-progress")
+
+let timerTime = config.timer.timeout_Seconds
 let currentNumber = config.startingNumber
 let isInputBeingEdited = false
+let isTimerPaused = false
+let timerInterval
 
 // functions
 
@@ -54,8 +73,57 @@ const log = (message, debugMode = false, showDate = true) => {
   )
 }
 
+const startOrContinueTimer = () => {
+  timerInterval = setInterval(() => {
+    if (timerTime <= 0) {
+      clearInterval(timerInterval)
+    } else {
+      timerTime--
+      updateTimerUI(timerTime)
+    }
+  }, 1000)
+}
+
+const toTwoDigitNumber = number => (number < 10 ? `0${number}` : number)
+
+const secondsToTimeString = seconds => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secondsLeft = seconds % 60
+  return `${toTwoDigitNumber(hours)}:${toTwoDigitNumber(
+    minutes
+  )}:${toTwoDigitNumber(secondsLeft)}`
+}
+
+const updateTimerString = time => {
+  timerTimeSpanEl.innerText = secondsToTimeString(time)
+}
+
+const updateInnerProgress = time => {
+  innerTimeProgressEl.style.width = `${
+    (time * 100) / config.timer.timeout_Seconds
+  }%`
+}
+
+const updateTimerUI = time => {
+  updateTimerString(time)
+  updateInnerProgress(time)
+}
+
 const updateCounterNumber = number => {
   numberEl.innerText = number
+}
+
+const updatePlayPauseBtnUI = pause => {
+  if (pause) {
+    pauseResumeBtn.innerText = "pause"
+    pauseResumeBtn.classList.add(PAUSE_PAUSE_RESUME_BUTTON_CLASS_NAME)
+    pauseResumeBtn.classList.remove(RESUME_PAUSE_RESUME_BUTTON_CLASS_NAME)
+  } else {
+    pauseResumeBtn.innerText = "resume"
+    pauseResumeBtn.classList.add(RESUME_PAUSE_RESUME_BUTTON_CLASS_NAME)
+    pauseResumeBtn.classList.remove(PAUSE_PAUSE_RESUME_BUTTON_CLASS_NAME)
+  }
 }
 
 const saveOnUrl = number => {
@@ -332,6 +400,7 @@ const setCounterToMin = () => {
 }
 
 const setCounterToLastSubjectNumber = () => {
+  if (isNaN(parseInt(getLastSubjectNumberFromLocalStorage()))) return
   currentNumber = parseInt(getLastSubjectNumberFromLocalStorage())
 
   updateCounterNumber(currentNumber)
@@ -345,6 +414,7 @@ const setCounterToLastSubjectNumber = () => {
 const clearMemory = () => {
   localStorage.clear()
 
+  lastSubjectEl.classList.add(INVISIBLE_LAST_SUBJECT_CLASS_NAME)
   lastSubjectSpanEl.innerText = ""
   numberSpanEl.innerText = ""
 
@@ -358,8 +428,26 @@ const clearMemory = () => {
   log("Memory cleared")
 }
 
+const pauseResumeTimer = () => {
+  if (!isTimerPaused) {
+    // pause the timer
+    updatePlayPauseBtnUI(false)
+    timerTimeSpanEl.classList.add(FLASHING_TIMER_CLASS_NAME)
+    isTimerPaused = true
+    clearInterval(timerInterval)
+  } else {
+    timerInterval
+    updatePlayPauseBtnUI(true)
+    timerTimeSpanEl.classList.remove(FLASHING_TIMER_CLASS_NAME)
+    isTimerPaused = false
+    startOrContinueTimer()
+  }
+}
+
 // setting initial state
 numberEl.innerText = config.startingNumber
+
+updateTimerUI(timerTime)
 
 increaseBtn.addEventListener("mousedown", increaseCounter)
 
@@ -376,6 +464,26 @@ minBtn.addEventListener("mousedown", setCounterToMin)
 savedBtn.addEventListener("mousedown", setCounterToLastSubjectNumber)
 
 clearMemoryBtn.addEventListener("mousedown", clearMemory)
+
+lastSubjectEl.addEventListener("click", setCounterToLastSubjectNumber)
+
+saveBtn.addEventListener("mousedown", () => {
+  lastSubjectDialog.showModal()
+
+  /* the reason behind the code below is
+      I think that requestAnimationFrame
+      make it so that after dialog is
+      opened, it will do the inner function
+  */
+  requestAnimationFrame(() => {
+    lastSubjectInputEl.focus()
+  })
+})
+
+pauseResumeBtn.addEventListener("mousedown", pauseResumeTimer)
+
+timerEl.addEventListener("mousedown", pauseResumeTimer)
+
 //  on pressing -, downarrow decrease
 document.addEventListener("keydown", event => {
   if (isInputBeingEdited) return
@@ -436,6 +544,7 @@ window.addEventListener("load", event => {
   currentNumber = getNumberFromLocalStorage()
 
   // update the UI
+  updateTimerUI(timerTime)
   updateCounterNumber(currentNumber)
   setButtonStatesBasedOnCurrentNumber()
   setNumberColorStateBasedOnCurrentNumber()
@@ -444,6 +553,9 @@ window.addEventListener("load", event => {
   const lastSubject = getLastSubjectFromLocalStorage()
   if (lastSubject) {
     lastSubjectSpanEl.innerText = lastSubject
+    lastSubjectEl.classList.remove(INVISIBLE_LAST_SUBJECT_CLASS_NAME)
+  } else {
+    lastSubjectEl.classList.add(INVISIBLE_LAST_SUBJECT_CLASS_NAME)
   }
 
   const lastSubjectNumber = getLastSubjectNumberFromLocalStorage()
@@ -454,6 +566,7 @@ window.addEventListener("load", event => {
 
 submitBtn.addEventListener("click", event => {
   event.preventDefault()
+  lastSubjectDialog.close()
   const subject = lastSubjectInputEl.value.trim()
   if (subject === "") {
     return
@@ -461,8 +574,9 @@ submitBtn.addEventListener("click", event => {
 
   lastSubjectSpanEl.innerText = subject
   numberSpanEl.innerText = currentNumber
+  lastSubjectEl.classList.remove(INVISIBLE_LAST_SUBJECT_CLASS_NAME)
 
-  log(`New saved subject: ${currentNumber} | Subject: "${subject}"`)
+  log(`New subject saved: ${currentNumber} >> "${subject}"`)
 
   lastSubjectInputEl.value = ""
 
@@ -483,6 +597,7 @@ lastSubjectInputEl.addEventListener("blur", () => {
 })
 // TODO: Add Buttons:
 
+// - Reset Timer
 // - Max [x]
 // - Min [x]
 // - Clear Memory [x]
@@ -490,10 +605,17 @@ lastSubjectInputEl.addEventListener("blur", () => {
 
 // TODO: Following key events
 
+// - P => Pause / Resume the timer
+// - Double click will reset time
 // - End => Go to Max [x]
 // - Home => Go to Min [x]
 // - Delete => Clear Memory [x]
 
+// TODO: FOLLOWING FEATURE
+
+// - Set Timer: a modal that has 3 inp and 1 btn
+// - save the current time
+// - when subject is saved, it time would be added to lastSubject text
 flashingTitleToggle &&
   setInterval(() => {
     if (document.title === `< ${currentNumber} >`) {
@@ -502,3 +624,5 @@ flashingTitleToggle &&
     }
     updateTitle(currentNumber)
   }, flashingTitleInterval)
+
+startOrContinueTimer()

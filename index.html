@@ -17,10 +17,14 @@
     </div>
 
     <div class="counter">
-        <p class="last-subject">Last Subject: (<span class="number-span"></span>) - <span
-                class="last-subject-span"></span>
+        <p class="last-subject invisible">(<span class="number-span"></span>) - <span class="last-subject-span"></span>
         </p>
         <p class="number">0</p>
+        <div class="timer">
+            <div class="inner-timer-progress"></div>
+            <span class="time">00:00:00</span>
+        </div>
+        <button class="save button-action">Save</button>
         <button class="increase">+</button>
         <button class="decrease">-</button>
         <button class="reset button-action">Reset</button>
@@ -29,14 +33,17 @@
         <button class="clear button-action">Clear</button>
         <button class="saved button-action">Saved</button>
         <button class="set button-action">Set</button>
+        <button class="pause-resume pause button-action">Pause</button>
     </div>
     <br>
 
-    <form class="form">
-        <label for="last">Enter Last Subject</label>
-        <input class="last-subject-input" type="text" id="last">
-        <button type="submit" class="submit">Submit</button>
-    </form>
+    <dialog class="last-subject-dialog">
+        <form class="form">
+            <label for="last">Add a description:</label>
+            <input class="last-subject-input" type="text" id="last">
+            <button type="submit" class="submit">SAVE</button>
+        </form>
+    </dialog>
 
 
 </body>

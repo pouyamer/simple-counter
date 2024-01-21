@@ -1,3 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+@font-face {
+  font-family: vazir;
+  src: url(./font/Vazir-Bold-FD.ttf);
+}
+
 /*==== Themes ====*/
 
 body[data-theme="1"] {
@@ -16,9 +23,13 @@ body[data-theme="1"] {
   --btn-min-hue: 15;
   --btn-max-hue: 140;
   --btn-reset-hue: 60;
+  --btn-save-hue: 240;
   --btn-saved-hue: 280;
   --btn-clear-hue: 330;
   --btn-set-hue: 40;
+
+  --btn-pause-hue: 0;
+  --btn-resume-hue: 100;
 }
 
 body[data-theme="2"] {
@@ -43,13 +54,6 @@ body[data-theme="2"] {
 }
 
 /*==== Typography ====*/
-
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-
-@font-face {
-  font-family: vazir;
-  src: url(./font/Vazir-Bold-FD.ttf);
-}
 
 *,
 *::after,
@@ -217,6 +221,22 @@ button.saved {
   grid-area: saved;
 }
 
+.save {
+  --btn-background-hue: var(--btn-save-hue);
+  grid-area: save;
+}
+.pause-resume {
+  grid-area: pause-resume;
+  margin-bottom: 3rem;
+}
+.pause-resume.pause {
+  --btn-background-hue: var(--btn-pause-hue);
+}
+
+.pause-resume.resume {
+  --btn-background-hue: var(--btn-resume-hue);
+}
+
 button.set {
   --btn-background-hue: var(--btn-set-hue);
   grid-area: set;
@@ -229,6 +249,7 @@ body {
 }
 
 .last-subject {
+  cursor: pointer;
   padding: 0.5rem;
   word-wrap: break-word;
   width: 100%;
@@ -242,10 +263,72 @@ body {
   grid-area: last-subject;
 }
 
+.last-subject.invisible {
+  font-size: 0;
+  padding: 0;
+}
+
+.last-subject:hover {
+  background-color: hsl(var(--app-main-hue), 80%, 30%);
+}
+
+.last-subject,
+.last-subject:hover {
+  transition: 200ms ease-out;
+}
+
 .last-subject-span,
 .number-span {
   font-weight: 600;
   color: hsl(var(--app-main-hue), 39%, 61%);
+}
+
+.timer {
+  cursor: pointer;
+  grid-area: timer;
+  font-size: 2rem;
+  color: #eee;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.25em;
+  padding: 0.5em;
+  border-radius: 1em;
+
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.timer:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.inner-timer-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+
+  background-color: rgba(255, 255, 255, 0.257);
+  z-index: -1;
+
+  transition: width ease-in-out;
+}
+
+span.time.flashing {
+  animation: timer-flashing 1s infinite;
+}
+
+@keyframes timer-flashing {
+  0% {
+    color: #eee;
+  }
+  50% {
+    color: #eee;
+  }
+  100% {
+    color: #eeeeee00;
+  }
 }
 
 .counter {
@@ -256,12 +339,15 @@ body {
   grid-template-columns: auto 3fr auto;
   grid-template-rows: auto 1fr;
   grid-template-areas:
+    ". timer ."
+    ". pause-resume ."
     " decrease number increase "
     " min . max "
     " set . reset "
-    "last-subject last-subject last-subject"
+    ". save ."
+    " . saved . "
     " . clear . "
-    " . saved . ";
+    "last-subject last-subject last-subject";
 
   padding: 5em;
   margin-bottom: 2em;
@@ -282,8 +368,19 @@ label {
   grid-area: label;
 }
 
+.last-subject-dialog {
+  top: 10%;
+  margin: 0 auto;
+  outline: none;
+  border: none;
+  padding: 1em;
+}
+
+.last-subject-dialog::backdrop {
+  background-color: #2222229e;
+}
+
 .form {
-  width: 50%;
   min-width: 750px;
   font-size: 1.25rem;
   display: grid;
@@ -329,13 +426,22 @@ label {
   }
   .number {
     font-size: 100px;
-    padding-block: 1em;
+    padding-block: 0 4rem;
     place-self: center;
   }
 
   .last-subject {
     margin: unset;
     margin-top: 0.5em;
+  }
+
+  .timer {
+    place-self: center;
+    background-color: rgba(255, 255, 255, 0.257);
+    padding: 0.5em;
+    border-radius: 1em;
+    margin-bottom: 0;
+    margin-top: 3rem;
   }
   .counter {
     place-items: unset;
@@ -354,15 +460,22 @@ label {
     margin: 0;
     grid-template-areas:
       "increase increase increase max"
+      "timer timer timer timer"
       "number number number number"
       "decrease decrease decrease min"
-      "reset set saved clear"
-      "last-subject last-subject last-subject last-subject";
+      "save save save save"
+      "reset reset set set"
+      "last-subject last-subject last-subject last-subject"
+      "saved saved clear clear";
     border-radius: 0;
 
     justify-content: center;
 
     gap: 8px;
+  }
+
+  .pause-resume {
+    display: none;
   }
 
   .increase,
@@ -390,7 +503,8 @@ label {
   .set,
   .reset,
   .clear,
-  button.saved {
+  button.saved,
+  .save {
     height: 25px;
   }
 
@@ -404,7 +518,6 @@ label {
   .form {
     min-width: unset;
 
-    margin-top: 1em;
     width: 90vw;
     max-width: 500px;
 
@@ -427,21 +540,12 @@ label {
   .number {
     font-size: 75px;
   }
-  .counter {
-    grid-template-areas:
-      "increase increase increase max"
-      "number number number number"
-      "decrease decrease decrease min"
-      "reset reset set set"
-      "last-subject last-subject last-subject last-subject"
-      "saved saved clear clear";
-  }
 
   .form {
     grid-template-areas:
       "label label label"
-      "input input input"
-      "submit submit submit";
+      "input input ."
+      "submit submit .";
   }
 
   .last-subject {
